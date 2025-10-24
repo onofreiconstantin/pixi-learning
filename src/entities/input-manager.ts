@@ -26,7 +26,7 @@ class InputManager {
   private handleClick(event: FederatedPointerEvent) {
     const { x, y } = event.getLocalPosition(this.container);
 
-    this.shapesManager.spawnShape({
+    this.shapesManager.spawn({
       x,
       y,
     });

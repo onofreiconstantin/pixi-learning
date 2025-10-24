@@ -1,5 +1,5 @@
 import { Container } from "pixi.js";
-import { Shape, ShapePosition } from "./shape";
+import { Shape, TShapePosition } from "./shape";
 
 class ShapeManager {
   private shapes: Shape[] = [];
@@ -16,7 +16,7 @@ class ShapeManager {
     this.timeAccumulator += deltaSeconds;
 
     if (this.timeAccumulator >= this.spawnInterval) {
-      this.spawnShape();
+      this.spawn();
       this.timeAccumulator -= this.spawnInterval;
     }
 
@@ -25,15 +25,15 @@ class ShapeManager {
       shape.update(deltaTime);
 
       if (shape.isOffScreen()) {
-        this.removeShape(shape);
+        this.remove(shape);
       }
     }
   }
 
-  public spawnShape(position?: ShapePosition) {
+  public spawn(position?: TShapePosition) {
     const shape = new Shape(undefined, undefined, position);
     shape.setOnClick(() => {
-      this.removeShape(shape);
+      this.remove(shape);
     });
     this.shapes.push(shape);
     this.container.addChild(shape.getGraphics());
@@ -43,7 +43,11 @@ class ShapeManager {
     return this.shapes.length;
   }
 
-  private removeShape(shape: Shape) {
+  public getTotalArea(): number {
+    return this.shapes.reduce((acc, shape) => acc + shape.getArea(), 0);
+  }
+
+  private remove(shape: Shape) {
     this.container.removeChild(shape.getGraphics());
     shape.destroy();
 

@@ -1,3 +1,8 @@
+:root {
+  --game-width: 720px;
+  --game-height: 480px;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -12,4 +17,20 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+
+.stats-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(calc(-1 * var(--game-width) / 2))
+    translateY(calc(-150% - var(--game-height) / 2));
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.stats-item {
+  color: #ffffff;
 }

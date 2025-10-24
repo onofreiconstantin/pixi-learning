@@ -1,7 +1,7 @@
 import { FederatedPointerEvent, Graphics } from "pixi.js";
-import { GRAVITY, HEIGHT, SHAPE_HEIGHT, WIDTH } from "../constants";
+import { GRAVITY, HEIGHT, SHAPE_RADIUS, WIDTH } from "../constants";
 
-enum ShapeType {
+enum EShapeType {
   CIRCLE = "CIRCLE",
   ELLIPSE = "ELLIPSE",
   STAR = "STAR",
@@ -11,18 +11,26 @@ enum ShapeType {
   HEXAGON = "HEXAGON",
 }
 
-type ShapeColor = `#${string}`;
+type TShapeColor = `#${string}`;
 
-type ShapePosition = { x: number; y: number };
+type TShapePosition = { x: number; y: number };
 
 class Shape {
   private graphics: Graphics;
+  private type: EShapeType;
+  private area: number = 0;
   private velocityY: number = 0;
   private gravity: number = GRAVITY;
 
-  constructor(type?: ShapeType, color?: ShapeColor, position?: ShapePosition) {
+  constructor(
+    type?: EShapeType,
+    color?: TShapeColor,
+    position?: TShapePosition
+  ) {
     this.graphics = new Graphics();
-    this.drawShape(type, color, position);
+    this.type = type || this.getRandomType();
+    this.area = this.calculateArea();
+    this.draw(color, position);
   }
 
   public getGraphics(): Graphics {
@@ -35,7 +43,7 @@ class Shape {
   }
 
   public isOffScreen(): boolean {
-    return this.graphics.y > HEIGHT + SHAPE_HEIGHT * 2;
+    return this.graphics.y > HEIGHT + SHAPE_RADIUS * 2;
   }
 
   public setOnClick(callback: () => void) {
@@ -48,42 +56,71 @@ class Shape {
     });
   }
 
+  private calculateArea(): number {
+    switch (this.type) {
+      case EShapeType.CIRCLE:
+        return Math.PI * SHAPE_RADIUS * SHAPE_RADIUS;
+      case EShapeType.ELLIPSE:
+        return Math.PI * SHAPE_RADIUS * 25;
+      case EShapeType.STAR:
+        return Math.PI * SHAPE_RADIUS * SHAPE_RADIUS * 0.6;
+      case EShapeType.TRIANGLE:
+        return (
+          (3 / 2) * SHAPE_RADIUS * SHAPE_RADIUS * Math.sin((2 * Math.PI) / 3)
+        );
+      case EShapeType.SQUARE:
+        return 2 * SHAPE_RADIUS * SHAPE_RADIUS;
+      case EShapeType.PENTAGON:
+        return (
+          (5 / 2) * SHAPE_RADIUS * SHAPE_RADIUS * Math.sin((2 * Math.PI) / 5)
+        );
+      case EShapeType.HEXAGON:
+        return ((3 * Math.sqrt(3)) / 2) * SHAPE_RADIUS * SHAPE_RADIUS;
+      default:
+        return 0;
+    }
+  }
+
+  public getArea(): number {
+    return this.area;
+  }
+
   public destroy() {
     this.graphics.removeAllListeners();
     this.graphics.destroy();
   }
 
-  private generateRandomColor(): ShapeColor {
+  private generateRandomColor(): TShapeColor {
     const randomColor = Math.floor(Math.random() * 16777215)
       .toString(16)
       .padStart(6, "0");
 
-    return `#${randomColor}`;
+    return `#${randomColor}` as TShapeColor;
   }
 
-  private getRandomType(): ShapeType {
-    const types = Object.values(ShapeType);
+  private getRandomType(): EShapeType {
+    const types = Object.values(EShapeType);
     const randomIndex = Math.floor(Math.random() * types.length);
     return types[randomIndex];
   }
 
   private randomPosition() {
     const x = Math.random() * WIDTH;
-    const y = -SHAPE_HEIGHT;
+    const y = -SHAPE_RADIUS;
 
     return { x, y };
   }
 
   private drawCircle(x: number, y: number) {
-    this.graphics.circle(x, y, SHAPE_HEIGHT);
+    this.graphics.circle(x, y, SHAPE_RADIUS);
   }
 
   private drawEllipse(x: number, y: number) {
-    this.graphics.ellipse(x, y, SHAPE_HEIGHT, 25);
+    this.graphics.ellipse(x, y, SHAPE_RADIUS, 25);
   }
 
   private drawStar(x: number, y: number) {
-    this.graphics.star(x, y, SHAPE_HEIGHT, 25, 10);
+    this.graphics.star(x, y, SHAPE_RADIUS, 25, 10);
   }
 
   private drawPolygon(x: number, y: number, sides: number) {
@@ -91,8 +128,8 @@ class Shape {
 
     for (let i = 0; i < sides; i++) {
       const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
-      points.push(x + SHAPE_HEIGHT * Math.cos(angle));
-      points.push(y + SHAPE_HEIGHT * Math.sin(angle));
+      points.push(x + SHAPE_RADIUS * Math.cos(angle));
+      points.push(y + SHAPE_RADIUS * Math.sin(angle));
     }
 
     this.graphics.poly(points);
@@ -114,37 +151,29 @@ class Shape {
     this.drawPolygon(x, y, 6);
   }
 
-  private drawShape(
-    type?: ShapeType,
-    color?: ShapeColor,
-    position?: ShapePosition
-  ) {
+  private draw(color?: TShapeColor, position?: TShapePosition) {
     const { x, y } = position || this.randomPosition();
 
-    if (!type) {
-      type = this.getRandomType();
-    }
-
-    switch (type) {
-      case ShapeType.CIRCLE:
+    switch (this.type) {
+      case EShapeType.CIRCLE:
         this.drawCircle(x, y);
         break;
-      case ShapeType.ELLIPSE:
+      case EShapeType.ELLIPSE:
         this.drawEllipse(x, y);
         break;
-      case ShapeType.STAR:
+      case EShapeType.STAR:
         this.drawStar(x, y);
         break;
-      case ShapeType.TRIANGLE:
+      case EShapeType.TRIANGLE:
         this.drawTriangle(x, y);
         break;
-      case ShapeType.SQUARE:
+      case EShapeType.SQUARE:
         this.drawSquare(x, y);
         break;
-      case ShapeType.PENTAGON:
+      case EShapeType.PENTAGON:
         this.drawPentagon(x, y);
         break;
-      case ShapeType.HEXAGON:
+      case EShapeType.HEXAGON:
         this.drawHexagon(x, y);
         break;
       default:
@@ -157,5 +186,5 @@ class Shape {
   }
 }
 
-export type { ShapeColor, ShapePosition };
-export { Shape, ShapeType };
+export type { TShapeColor, TShapePosition };
+export { Shape, EShapeType };
