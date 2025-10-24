@@ -1,4 +1,7 @@
 const WIDTH = 720;
 const HEIGHT = 480;
 
-export { WIDTH, HEIGHT };
+const GRAVITY = 0.05;
+const SHAPE_HEIGHT = 50;
+
+export { WIDTH, HEIGHT, GRAVITY, SHAPE_HEIGHT };

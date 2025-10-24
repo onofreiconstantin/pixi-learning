@@ -1,28 +1,23 @@
 import { Container } from "pixi.js";
-import { Shape } from "./shape";
+import { Shape, ShapePosition } from "./shape";
 
 class ShapeManager {
   private shapes: Shape[] = [];
   private container: Container;
-  private spawnInterval: number = 1000;
-  private lastSpawnTime: number = 0;
+  private spawnInterval: number = 1;
+  private timeAccumulator: number = 0;
 
   constructor(container: Container) {
     this.container = container;
   }
 
-  private spawnShape() {
-    const shape = new Shape();
-    this.shapes.push(shape);
-    this.container.addChild(shape.getGraphics());
-  }
-
   public update(deltaTime: number) {
-    const currentTime = Date.now();
+    const deltaSeconds = deltaTime / 60;
+    this.timeAccumulator += deltaSeconds;
 
-    if (currentTime - this.lastSpawnTime >= this.spawnInterval) {
+    if (this.timeAccumulator >= this.spawnInterval) {
       this.spawnShape();
-      this.lastSpawnTime = currentTime;
+      this.timeAccumulator -= this.spawnInterval;
     }
 
     for (let i = this.shapes.length - 1; i >= 0; i--) {
@@ -30,11 +25,30 @@ class ShapeManager {
       shape.update(deltaTime);
 
       if (shape.isOffScreen()) {
-        this.container.removeChild(shape.getGraphics());
-        shape.getGraphics().destroy();
-        this.shapes.splice(i, 1);
+        this.removeShape(shape);
       }
     }
+  }
+
+  public spawnShape(position?: ShapePosition) {
+    const shape = new Shape(undefined, undefined, position);
+    shape.setOnClick(() => {
+      this.removeShape(shape);
+    });
+    this.shapes.push(shape);
+    this.container.addChild(shape.getGraphics());
+  }
+
+  public getShapesCount() {
+    return this.shapes.length;
+  }
+
+  private removeShape(shape: Shape) {
+    this.container.removeChild(shape.getGraphics());
+    shape.destroy();
+
+    const index = this.shapes.indexOf(shape);
+    this.shapes.splice(index, 1);
   }
 }
 

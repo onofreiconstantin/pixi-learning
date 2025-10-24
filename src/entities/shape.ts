@@ -1,5 +1,5 @@
-import { Graphics } from "pixi.js";
-import { HEIGHT, WIDTH } from "../constants";
+import { FederatedPointerEvent, Graphics } from "pixi.js";
+import { GRAVITY, HEIGHT, SHAPE_HEIGHT, WIDTH } from "../constants";
 
 enum ShapeType {
   CIRCLE = "CIRCLE",
@@ -13,18 +13,44 @@ enum ShapeType {
 
 type ShapeColor = `#${string}`;
 
+type ShapePosition = { x: number; y: number };
+
 class Shape {
   private graphics: Graphics;
-  private type: ShapeType;
-  private color: ShapeColor;
   private velocityY: number = 0;
-  private gravity: number = 0.25;
+  private gravity: number = GRAVITY;
 
-  constructor(type?: ShapeType, color?: ShapeColor) {
+  constructor(type?: ShapeType, color?: ShapeColor, position?: ShapePosition) {
     this.graphics = new Graphics();
-    this.type = type || this.getRandomType();
-    this.color = color || this.generateRandomColor();
-    this.drawShape();
+    this.drawShape(type, color, position);
+  }
+
+  public getGraphics(): Graphics {
+    return this.graphics;
+  }
+
+  public update(deltaTime: number) {
+    this.velocityY += this.gravity * deltaTime;
+    this.graphics.y += this.velocityY * deltaTime;
+  }
+
+  public isOffScreen(): boolean {
+    return this.graphics.y > HEIGHT + SHAPE_HEIGHT * 2;
+  }
+
+  public setOnClick(callback: () => void) {
+    this.graphics.interactive = true;
+    this.graphics.cursor = "pointer";
+
+    this.graphics.on("pointerdown", (event: FederatedPointerEvent) => {
+      event.stopPropagation();
+      callback();
+    });
+  }
+
+  public destroy() {
+    this.graphics.removeAllListeners();
+    this.graphics.destroy();
   }
 
   private generateRandomColor(): ShapeColor {
@@ -43,21 +69,21 @@ class Shape {
 
   private randomPosition() {
     const x = Math.random() * WIDTH;
-    const y = -50;
+    const y = -SHAPE_HEIGHT;
 
     return { x, y };
   }
 
   private drawCircle(x: number, y: number) {
-    this.graphics.circle(x, y, 50);
+    this.graphics.circle(x, y, SHAPE_HEIGHT);
   }
 
   private drawEllipse(x: number, y: number) {
-    this.graphics.ellipse(x, y, 50, 25);
+    this.graphics.ellipse(x, y, SHAPE_HEIGHT, 25);
   }
 
   private drawStar(x: number, y: number) {
-    this.graphics.star(x, y, 50, 25, 10);
+    this.graphics.star(x, y, SHAPE_HEIGHT, 25, 10);
   }
 
   private drawPolygon(x: number, y: number, sides: number) {
@@ -65,8 +91,8 @@ class Shape {
 
     for (let i = 0; i < sides; i++) {
       const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
-      points.push(x + 50 * Math.cos(angle));
-      points.push(y + 50 * Math.sin(angle));
+      points.push(x + SHAPE_HEIGHT * Math.cos(angle));
+      points.push(y + SHAPE_HEIGHT * Math.sin(angle));
     }
 
     this.graphics.poly(points);
@@ -88,10 +114,18 @@ class Shape {
     this.drawPolygon(x, y, 6);
   }
 
-  private drawShape() {
-    const { x, y } = this.randomPosition();
+  private drawShape(
+    type?: ShapeType,
+    color?: ShapeColor,
+    position?: ShapePosition
+  ) {
+    const { x, y } = position || this.randomPosition();
 
-    switch (this.type) {
+    if (!type) {
+      type = this.getRandomType();
+    }
+
+    switch (type) {
       case ShapeType.CIRCLE:
         this.drawCircle(x, y);
         break;
@@ -118,23 +152,10 @@ class Shape {
     }
 
     this.graphics.fill({
-      color: this.color,
+      color: color || this.generateRandomColor(),
     });
-  }
-
-  public getGraphics(): Graphics {
-    return this.graphics;
-  }
-
-  public update(deltaTime: number) {
-    this.velocityY += this.gravity * deltaTime;
-    this.graphics.y += this.velocityY * deltaTime;
-  }
-
-  public isOffScreen(): boolean {
-    return this.graphics.y > HEIGHT + 100;
   }
 }
 
-export type { ShapeColor };
+export type { ShapeColor, ShapePosition };
 export { Shape, ShapeType };
