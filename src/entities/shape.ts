@@ -17,16 +17,14 @@ class Shape {
   private graphics: Graphics;
   private type: ShapeType;
   private color: ShapeColor;
+  private velocityY: number = 0;
+  private gravity: number = 0.25;
 
   constructor(type?: ShapeType, color?: ShapeColor) {
     this.graphics = new Graphics();
     this.type = type || this.getRandomType();
     this.color = color || this.generateRandomColor();
     this.drawShape();
-  }
-
-  public getGraphics(): Graphics {
-    return this.graphics;
   }
 
   private generateRandomColor(): ShapeColor {
@@ -45,7 +43,7 @@ class Shape {
 
   private randomPosition() {
     const x = Math.random() * WIDTH;
-    const y = Math.random() * HEIGHT;
+    const y = -50;
 
     return { x, y };
   }
@@ -123,7 +121,20 @@ class Shape {
       color: this.color,
     });
   }
+
+  public getGraphics(): Graphics {
+    return this.graphics;
+  }
+
+  public update(deltaTime: number) {
+    this.velocityY += this.gravity * deltaTime;
+    this.graphics.y += this.velocityY * deltaTime;
+  }
+
+  public isOffScreen(): boolean {
+    return this.graphics.y > HEIGHT + 100;
+  }
 }
 
-export type { ShapeType, ShapeColor };
-export default Shape;
+export type { ShapeColor };
+export { Shape, ShapeType };

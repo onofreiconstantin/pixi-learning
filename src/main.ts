@@ -1,7 +1,7 @@
 import { Application } from "pixi.js";
 import { WIDTH } from "./constants";
 import { HEIGHT } from "./constants";
-import Shape from "./entities/shape";
+import { ShapeManager } from "./entities/shape-manager";
 
 (async () => {
   const app = new Application();
@@ -12,9 +12,11 @@ import Shape from "./entities/shape";
     height: HEIGHT,
   });
 
-  const shape = new Shape();
-
-  app.stage.addChild(shape.getGraphics());
-
   document.getElementById("pixi-container")!.appendChild(app.canvas);
+
+  const shapeManager = new ShapeManager(app.stage);
+
+  app.ticker.add((ticker) => {
+    shapeManager.update(ticker.deltaTime);
+  });
 })();
