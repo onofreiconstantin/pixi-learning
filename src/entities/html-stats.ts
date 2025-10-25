@@ -30,10 +30,10 @@ class HtmlStats implements IStatsDisplay {
     document.body.appendChild(this.container);
 
     this.shapeCountElement = document.getElementById(
-      "shape-count"
+      "shape-count",
     ) as HTMLSpanElement;
     this.surfaceAreaElement = document.getElementById(
-      "surface-area"
+      "surface-area",
     ) as HTMLSpanElement;
   }
 

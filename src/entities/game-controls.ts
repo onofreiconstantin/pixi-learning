@@ -14,7 +14,7 @@ class GameControls {
     onSpawnRateChange: (rate: number) => void,
     onGravityChange: (gravity: number) => void,
     initialSpawnRate: number = 1,
-    initialGravity: number = GRAVITY
+    initialGravity: number = GRAVITY,
   ) {
     this.onSpawnRateChange = onSpawnRateChange;
     this.onGravityChange = onGravityChange;
@@ -35,7 +35,7 @@ class GameControls {
       "Shapes/sec:",
       this.currentSpawnRate.toString(),
       () => this.decreaseSpawnRate(),
-      () => this.increaseSpawnRate()
+      () => this.increaseSpawnRate(),
     );
     this.spawnRateValue = spawnRateControl.valueElement;
 
@@ -43,7 +43,7 @@ class GameControls {
       "Gravity:",
       this.currentGravity.toFixed(2),
       () => this.decreaseGravity(),
-      () => this.increaseGravity()
+      () => this.increaseGravity(),
     );
     this.gravityValue = gravityControl.valueElement;
 
@@ -57,7 +57,7 @@ class GameControls {
     label: string,
     initialValue: string,
     onDecrease: () => void,
-    onIncrease: () => void
+    onIncrease: () => void,
   ): { element: HTMLDivElement; valueElement: HTMLSpanElement } {
     const controlDiv = document.createElement("div");
     controlDiv.classList.add("controls-item");
@@ -104,7 +104,7 @@ class GameControls {
   private increaseGravity(): void {
     this.currentGravity = this.roundToDecimals(
       Math.min(5, this.currentGravity + 0.05),
-      2
+      2,
     );
     this.gravityValue.textContent = this.currentGravity.toFixed(2);
     this.onGravityChange(this.currentGravity);
@@ -113,7 +113,7 @@ class GameControls {
   private decreaseGravity(): void {
     this.currentGravity = this.roundToDecimals(
       Math.max(0, this.currentGravity - 0.05),
-      2
+      2,
     );
     this.gravityValue.textContent = this.currentGravity.toFixed(2);
     this.onGravityChange(this.currentGravity);

@@ -38,7 +38,7 @@ import { GameControls } from "./entities/game-controls";
 
   new GameControls(
     (rate) => shapeManager.setSpawnRate(rate),
-    (gravity) => shapeManager.setGravity(gravity)
+    (gravity) => shapeManager.setGravity(gravity),
   );
 
   app.ticker.add((ticker) => {

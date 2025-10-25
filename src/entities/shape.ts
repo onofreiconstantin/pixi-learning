@@ -24,7 +24,7 @@ class Shape {
   constructor(
     type?: EShapeType,
     color?: TShapeColor,
-    position?: TShapePosition
+    position?: TShapePosition,
   ) {
     this.graphics = new Graphics();
     this.type = type || this.getRandomType();
