@@ -1,4 +1,4 @@
-const WIDTH = 720;
+const WIDTH = 320;
 const HEIGHT = 480;
 
 const GRAVITY = 0.05;

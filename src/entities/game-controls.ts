@@ -84,6 +84,11 @@ class GameControls {
     return { element: controlDiv, valueElement: valueSpan };
   }
 
+  private roundToDecimals(value: number, decimals: number): number {
+    const multiplier = Math.pow(10, decimals);
+    return Math.round(value * multiplier) / multiplier;
+  }
+
   private increaseSpawnRate(): void {
     this.currentSpawnRate = Math.min(100, this.currentSpawnRate + 1);
     this.spawnRateValue.textContent = this.currentSpawnRate.toString();
@@ -97,13 +102,19 @@ class GameControls {
   }
 
   private increaseGravity(): void {
-    this.currentGravity = Math.min(5, this.currentGravity + 0.05);
+    this.currentGravity = this.roundToDecimals(
+      Math.min(5, this.currentGravity + 0.05),
+      2
+    );
     this.gravityValue.textContent = this.currentGravity.toFixed(2);
     this.onGravityChange(this.currentGravity);
   }
 
   private decreaseGravity(): void {
-    this.currentGravity = Math.max(0, this.currentGravity - 0.05);
+    this.currentGravity = this.roundToDecimals(
+      Math.max(0, this.currentGravity - 0.05),
+      2
+    );
     this.gravityValue.textContent = this.currentGravity.toFixed(2);
     this.onGravityChange(this.currentGravity);
   }
