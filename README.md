@@ -27,13 +27,13 @@ After installing the dependencies, you can start the application in development 
 npm run dev
 ```
 
-or
+After building the application, you can start it using:
 
 ```bash
-npm start
+npm run start
 ```
 
-Both commands will start the Vite development server, which will compile the code and serve the application at a local address (usually http://localhost:5173).
+The development server will compile the code and serve the application at a local address (http://localhost:8080).
 
 ## Building for Production
 
