@@ -1,11 +1,13 @@
 import { Container } from "pixi.js";
 import { Shape, TShapePosition } from "./shape";
+import { GRAVITY } from "../constants";
 
 class ShapeManager {
   private shapes: Shape[] = [];
   private container: Container;
-  private spawnInterval: number = 1;
+  private spawnRate: number = 1;
   private timeAccumulator: number = 0;
+  private gravity: number = GRAVITY;
 
   constructor(container: Container) {
     this.container = container;
@@ -13,16 +15,19 @@ class ShapeManager {
 
   public update(deltaTime: number) {
     const deltaSeconds = deltaTime / 60;
-    this.timeAccumulator += deltaSeconds;
 
-    if (this.timeAccumulator >= this.spawnInterval) {
-      this.spawn();
-      this.timeAccumulator -= this.spawnInterval;
+    if (this.spawnRate > 0) {
+      this.timeAccumulator += deltaSeconds;
+      const spawnInterval = 1 / this.spawnRate;
+
+      while (this.timeAccumulator >= spawnInterval) {
+        this.spawn();
+        this.timeAccumulator -= spawnInterval;
+      }
     }
-
     for (let i = this.shapes.length - 1; i >= 0; i--) {
       const shape = this.shapes[i];
-      shape.update(deltaTime);
+      shape.update(deltaTime, this.gravity);
 
       if (shape.isOffScreen()) {
         this.remove(shape);
@@ -37,6 +42,21 @@ class ShapeManager {
     });
     this.shapes.push(shape);
     this.container.addChild(shape.getGraphics());
+  }
+
+  public setSpawnRate(shapesPerSecond: number): void {
+    this.spawnRate = shapesPerSecond;
+    if (shapesPerSecond === 0) {
+      this.timeAccumulator = 0;
+    }
+  }
+
+  public setGravity(gravity: number): void {
+    this.gravity = gravity;
+
+    if (gravity === 0) {
+      this.shapes.forEach((shape) => shape.resetVelocity());
+    }
   }
 
   public getShapesCount() {

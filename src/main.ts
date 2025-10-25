@@ -4,6 +4,7 @@ import { InputManager } from "./entities/input-manager";
 import { GameContainer } from "./entities/game-container";
 import { EStatsType, StatsFactory } from "./interfaces/stats/stats-factory";
 import { PixiStats } from "./entities/pixi-stats";
+import { GameControls } from "./entities/game-controls";
 
 (async () => {
   const app = new Application();
@@ -16,7 +17,7 @@ import { PixiStats } from "./entities/pixi-stats";
   document.getElementById("pixi-container")!.appendChild(app.canvas);
 
   const gameContainer = new GameContainer();
-  app.stage.addChild(gameContainer.getContainer());
+  app.stage.addChild(gameContainer.getWrapper());
 
   gameContainer.center(app.screen.width, app.screen.height);
 
@@ -26,14 +27,19 @@ import { PixiStats } from "./entities/pixi-stats";
 
   resizeObserver.observe(app.canvas);
 
-  const shapeManager = new ShapeManager(gameContainer.getGameContainer());
-  new InputManager(gameContainer.getGameContainer(), shapeManager);
+  const shapeManager = new ShapeManager(gameContainer.getContainer());
+  new InputManager(gameContainer.getContainer(), shapeManager);
 
-  const statsDisplay = StatsFactory.create(EStatsType.PIXI);
+  const statsDisplay = StatsFactory.create(EStatsType.HTML);
 
   if (statsDisplay instanceof PixiStats) {
     gameContainer.addPixiStats(statsDisplay);
   }
+
+  new GameControls(
+    (rate) => shapeManager.setSpawnRate(rate),
+    (gravity) => shapeManager.setGravity(gravity)
+  );
 
   app.ticker.add((ticker) => {
     shapeManager.update(ticker.deltaTime);

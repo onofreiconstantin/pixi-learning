@@ -1,5 +1,5 @@
 import { FederatedPointerEvent, Graphics } from "pixi.js";
-import { GRAVITY, HEIGHT, SHAPE_RADIUS, WIDTH } from "../constants";
+import { HEIGHT, SHAPE_RADIUS, WIDTH } from "../constants";
 
 enum EShapeType {
   CIRCLE = "CIRCLE",
@@ -20,7 +20,6 @@ class Shape {
   private type: EShapeType;
   private area: number = 0;
   private velocityY: number = 0;
-  private gravity: number = GRAVITY;
 
   constructor(
     type?: EShapeType,
@@ -37,9 +36,13 @@ class Shape {
     return this.graphics;
   }
 
-  public update(deltaTime: number) {
-    this.velocityY += this.gravity * deltaTime;
+  public update(deltaTime: number, gravity: number) {
+    this.velocityY += gravity * deltaTime;
     this.graphics.y += this.velocityY * deltaTime;
+  }
+
+  public resetVelocity(): void {
+    this.velocityY = 0;
   }
 
   public isOffScreen(): boolean {

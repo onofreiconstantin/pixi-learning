@@ -3,34 +3,34 @@ import { WIDTH, HEIGHT } from "../constants";
 import { PixiStats } from "./pixi-stats";
 
 class GameContainer {
+  private wrapper: Container;
   private container: Container;
-  private gameContainer: Container;
 
   constructor() {
+    this.wrapper = new Container();
     this.container = new Container();
-    this.gameContainer = new Container();
 
-    this.container.addChild(this.gameContainer);
+    this.wrapper.addChild(this.container);
 
     this.createBackground();
     this.createMask();
+  }
+
+  public getWrapper(): Container {
+    return this.wrapper;
   }
 
   public getContainer(): Container {
     return this.container;
   }
 
-  public getGameContainer(): Container {
-    return this.gameContainer;
-  }
-
   public addPixiStats(pixiStats: PixiStats): void {
-    this.container.addChild(pixiStats.getContainer());
+    this.wrapper.addChild(pixiStats.getContainer());
   }
 
   public center(screenWidth: number, screenHeight: number) {
-    this.container.x = (screenWidth - WIDTH) / 2;
-    this.container.y = (screenHeight - HEIGHT) / 2;
+    this.wrapper.x = (screenWidth - WIDTH) / 2;
+    this.wrapper.y = (screenHeight - HEIGHT) / 2;
   }
 
   private createBackground() {
@@ -39,7 +39,7 @@ class GameContainer {
     background.rect(0, 0, WIDTH, HEIGHT);
     background.fill({ color: "#FFFFFF" });
 
-    this.gameContainer.addChild(background);
+    this.container.addChild(background);
   }
 
   private createMask() {
@@ -48,8 +48,8 @@ class GameContainer {
     mask.rect(0, 0, WIDTH, HEIGHT);
     mask.fill({ color: "#000000" });
 
-    this.gameContainer.addChild(mask);
-    this.gameContainer.mask = mask;
+    this.container.addChild(mask);
+    this.container.mask = mask;
   }
 }
 
