@@ -1,6 +1,6 @@
-# PixiJS Test
+# PixiJS Learning Project
 
-This project is a test application for PixiJS, a fast 2D rendering library for WebGL and Canvas.
+This project is a learning application for PixiJS, a fast 2D rendering library for WebGL and Canvas.
 
 ## Prerequisites
 
