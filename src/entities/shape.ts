@@ -30,8 +30,6 @@ class Shape {
     this.type = type || this.getRandomType();
     this.area = this.calculateArea();
     this.draw(color, position);
-
-    console.log(this.type, this.area);
   }
 
   public getGraphics(): Graphics {
