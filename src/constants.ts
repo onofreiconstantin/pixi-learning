@@ -2,6 +2,6 @@ const WIDTH = 320;
 const HEIGHT = 480;
 
 const GRAVITY = 0.05;
-const SHAPE_RADIUS = 50;
+const SHAPE_SIZE = 50;
 
-export { WIDTH, HEIGHT, GRAVITY, SHAPE_RADIUS };
+export { WIDTH, HEIGHT, GRAVITY, SHAPE_SIZE };

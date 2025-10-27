@@ -1,5 +1,5 @@
 import { FederatedPointerEvent, Graphics } from "pixi.js";
-import { HEIGHT, SHAPE_RADIUS, WIDTH } from "../constants";
+import { HEIGHT, SHAPE_SIZE, WIDTH } from "../constants";
 
 enum EShapeType {
   CIRCLE = "CIRCLE",
@@ -24,12 +24,14 @@ class Shape {
   constructor(
     type?: EShapeType,
     color?: TShapeColor,
-    position?: TShapePosition,
+    position?: TShapePosition
   ) {
     this.graphics = new Graphics();
     this.type = type || this.getRandomType();
     this.area = this.calculateArea();
     this.draw(color, position);
+
+    console.log(this.type, this.area);
   }
 
   public getGraphics(): Graphics {
@@ -46,7 +48,7 @@ class Shape {
   }
 
   public isOffScreen(): boolean {
-    return this.graphics.y > HEIGHT + SHAPE_RADIUS * 2;
+    return this.graphics.y > HEIGHT + SHAPE_SIZE * 2;
   }
 
   public setOnClick(callback: () => void) {
@@ -62,23 +64,19 @@ class Shape {
   private calculateArea(): number {
     switch (this.type) {
       case EShapeType.CIRCLE:
-        return Math.PI * SHAPE_RADIUS * SHAPE_RADIUS;
+        return Math.PI * SHAPE_SIZE * SHAPE_SIZE;
       case EShapeType.ELLIPSE:
-        return Math.PI * SHAPE_RADIUS * 25;
+        return Math.PI * SHAPE_SIZE * (SHAPE_SIZE / 2);
       case EShapeType.STAR:
-        return Math.PI * SHAPE_RADIUS * SHAPE_RADIUS * 0.6;
+        return 5 * SHAPE_SIZE * SHAPE_SIZE * 0.5 * Math.sin(Math.PI / 5);
       case EShapeType.TRIANGLE:
-        return (
-          (3 / 2) * SHAPE_RADIUS * SHAPE_RADIUS * Math.sin((2 * Math.PI) / 3)
-        );
+        return (3 / 2) * SHAPE_SIZE * SHAPE_SIZE * Math.sin((2 * Math.PI) / 3);
       case EShapeType.SQUARE:
-        return 2 * SHAPE_RADIUS * SHAPE_RADIUS;
+        return 2 * SHAPE_SIZE * SHAPE_SIZE;
       case EShapeType.PENTAGON:
-        return (
-          (5 / 2) * SHAPE_RADIUS * SHAPE_RADIUS * Math.sin((2 * Math.PI) / 5)
-        );
+        return (5 / 2) * SHAPE_SIZE * SHAPE_SIZE * Math.sin((2 * Math.PI) / 5);
       case EShapeType.HEXAGON:
-        return ((3 * Math.sqrt(3)) / 2) * SHAPE_RADIUS * SHAPE_RADIUS;
+        return ((3 * Math.sqrt(3)) / 2) * SHAPE_SIZE * SHAPE_SIZE;
       default:
         return 0;
     }
@@ -109,21 +107,21 @@ class Shape {
 
   private randomPosition() {
     const x = Math.random() * WIDTH;
-    const y = -SHAPE_RADIUS;
+    const y = -SHAPE_SIZE;
 
     return { x, y };
   }
 
   private drawCircle(x: number, y: number) {
-    this.graphics.circle(x, y, SHAPE_RADIUS);
+    this.graphics.circle(x, y, SHAPE_SIZE);
   }
 
   private drawEllipse(x: number, y: number) {
-    this.graphics.ellipse(x, y, SHAPE_RADIUS, 25);
+    this.graphics.ellipse(x, y, SHAPE_SIZE, 25);
   }
 
   private drawStar(x: number, y: number) {
-    this.graphics.star(x, y, SHAPE_RADIUS, 25, 10);
+    this.graphics.star(x, y, 5, SHAPE_SIZE, SHAPE_SIZE * 0.5);
   }
 
   private drawPolygon(x: number, y: number, sides: number) {
@@ -131,8 +129,8 @@ class Shape {
 
     for (let i = 0; i < sides; i++) {
       const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
-      points.push(x + SHAPE_RADIUS * Math.cos(angle));
-      points.push(y + SHAPE_RADIUS * Math.sin(angle));
+      points.push(x + SHAPE_SIZE * Math.cos(angle));
+      points.push(y + SHAPE_SIZE * Math.sin(angle));
     }
 
     this.graphics.poly(points);
